@@ -556,7 +556,7 @@ typedef struct playerState_s
 #define BUTTON_USE_HOLDABLE 4
 #define BUTTON_GESTURE 8
 #define BUTTON_WALKING                                                                                                 \
-  16 // walking can't just be infered from MOVE_RUN
+  16 // walking can't just be inferred from MOVE_RUN
      // because a key pressed late in the frame will
      // only generate a small move value for that frame
      // walking will use different animations and

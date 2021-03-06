@@ -160,7 +160,7 @@ typedef enum
 
 typedef enum
 {
-  GLHW_GENERIC,   // where everthing works the way it should
+  GLHW_GENERIC,   // where everything works the way it should
   GLHW_3DFX_2D3D, // Voodoo Banshee or Voodoo3, relevant since if this is
                   // the hardware type then there can NOT exist a secondary
                   // display adapter

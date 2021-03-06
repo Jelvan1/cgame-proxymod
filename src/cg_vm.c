@@ -317,7 +317,7 @@ static void VM_Run(vm_t* vm)
       //
 
     // get value at address stored in opStack[0], store in opStack[0]
-    //(do neccesary conversions)
+    //(do necessary conversions)
     // this is essentially the 'dereferencing' opcode set
     // 1-byte
     case OP_LOAD1:
