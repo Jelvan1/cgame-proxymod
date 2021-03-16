@@ -29,6 +29,13 @@ defrag_t defrag_versions[] = {
     0x00002956, // cg_draw2d_defrag
     0x0001CBC9, // cg_draw2d_vanilla
   },
+  {
+    "1.91.27",  // name
+    0x8D53765B, // crc32sum
+    0x000EA09C, // pps_offset
+    0x000029E5, // cg_draw2d_defrag
+    0x0001CCF1, // cg_draw2d_vanilla
+  },
 };
 
 qboolean init_defrag(uint32_t crc32sum)
