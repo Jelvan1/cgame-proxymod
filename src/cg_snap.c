@@ -278,9 +278,7 @@ static void PmoveSingle(void)
     PM_AirMove();
   }
 
-  // TODO: calc yaw similar to cgaz
-  float const yaw = (s.pm_ps.viewangles[YAW] * 65536 / 360) +
-                    RAD2SHORT(atan2f((float)-s.pm.cmd.rightmove, (float)s.pm.cmd.forwardmove));
+  float const yaw = RAD2SHORT(atan2f(s.wishvel[1], s.wishvel[0]));
 
   one_snap_draw(AngleNormalize65536(lroundf(yaw)));
 }
