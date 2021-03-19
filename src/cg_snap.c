@@ -277,7 +277,9 @@ static void PmoveSingle(void)
     // airborne
     PM_AirMove();
   }
-
+  
+  // TODO: we should not go to short angles just yet and keep using floating point numbers until we start drawing. 
+  // Otherwise the positions of the snapzone borders will be slightly off since we round/snap the yaw angle here.
   float const yaw = RAD2SHORT(atan2f(s.wishvel[1], s.wishvel[0]));
 
   one_snap_draw(AngleNormalize65536(lroundf(yaw)));
