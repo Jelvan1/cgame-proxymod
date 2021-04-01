@@ -325,6 +325,14 @@ static void PM_SlickAccelerate(float const wishspeed, float const accel)
   }
 }
 
+static void PM_UpdateWishvel(void)
+{
+  for (uint8_t i = 0; i < 2; ++i)
+  {
+    s.wishvel[i] = s.pm.cmd.forwardmove * s.pml.forward[i] + s.pm.cmd.rightmove * s.pml.right[i];
+  }
+}
+
 /*
 ===================
 PM_AirMove
@@ -342,10 +350,7 @@ static void PM_AirMove(void)
   VectorNormalize(s.pml.forward);
   VectorNormalize(s.pml.right);
 
-  for (uint8_t i = 0; i < 2; ++i)
-  {
-    s.wishvel[i] = s.pm.cmd.forwardmove * s.pml.forward[i] + s.pm.cmd.rightmove * s.pml.right[i];
-  }
+  PM_UpdateWishvel();
 
   float const wishspeed = scale * VectorLength2(s.wishvel);
 
@@ -386,11 +391,15 @@ static void PM_AirMove(void)
     }
     else
     {
-      // Always show the zones for holding 2 keys
-      if (s.pm.cmd.forwardmove)
-        s.pm.cmd.rightmove = s.pm.cmd.forwardmove;
-      else
-        s.pm.cmd.forwardmove = s.pm.cmd.rightmove;
+      if (ANGLE2SHORT(s.pm_ps.viewangles[ROLL]) % 32768 == 0) // Fullbeat zones are only symmetric with horizontal roll (or pitch)
+      {
+        // Always show the zones for holding 2 keys
+        if (s.pm.cmd.forwardmove)
+          s.pm.cmd.rightmove = s.pm.cmd.forwardmove;
+        else
+          s.pm.cmd.forwardmove = s.pm.cmd.rightmove;
+        PM_UpdateWishvel(); // At this point wishvel is only used to position the hud based on view direction and pressed keys.
+      }
       PM_Accelerate(wishspeed, pm_airaccelerate);
     }
   }
@@ -464,10 +473,7 @@ static void PM_WalkMove(void)
   VectorNormalize(s.pml.forward);
   VectorNormalize(s.pml.right);
 
-  for (uint8_t i = 0; i < 2; ++i)
-  {
-    s.wishvel[i] = s.pm.cmd.forwardmove * s.pml.forward[i] + s.pm.cmd.rightmove * s.pml.right[i];
-  }
+  PM_UpdateWishvel();
 
   float wishspeed = scale * VectorLength2(s.wishvel);
 
