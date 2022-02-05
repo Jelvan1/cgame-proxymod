@@ -332,6 +332,30 @@ static inline range_t AnglesToRange(float start, float end, float yaw)
   return ret;
 }
 
+static inline range_t PitchAnglesToRange(float start, float end, float pitch)
+{
+  if (fabsf(end - start) > 2 * (float)M_PI)
+  {
+    range_t const ret = { 0, cgs.screenHeight, qfalse };
+    return ret;
+  }
+
+  qboolean split = end > start;
+  start          = AngleNormalizePI(start - pitch);
+  end            = AngleNormalizePI(end - pitch);
+
+  if (end > start)
+  {
+    split           = !split;
+    float const tmp = start;
+    start           = end;
+    end             = tmp;
+  }
+
+  range_t const ret = { ProjectionY(start), ProjectionY(end), split };
+  return ret;
+}
+
 void CG_DrawLinePitch(float angle, float pitch, float x, float w, float h, vec4_t const color)
 {
   angle = AngleNormalizePI(angle - pitch);
@@ -339,6 +363,20 @@ void CG_DrawLinePitch(float angle, float pitch, float x, float w, float h, vec4_
 
   float const y = ProjectionY(angle);
   CG_FillRect(x, y - h / 2, w, h, color);
+}
+
+void CG_FillAnglePitch(float start, float end, float pitch, float x, float w, vec4_t const color)
+{
+  range_t const range = PitchAnglesToRange(start, end, pitch);
+  if (!range.split)
+  {
+    CG_FillRect(x, range.x1, w, range.x2 - range.x1, color);
+  }
+  else
+  {
+    CG_FillRect(x, 0, w, range.x1, color);
+    CG_FillRect(x, range.x2, w, cgs.screenHeight - range.x2, color);
+  }
 }
 
 void CG_FillAngleYaw(float start, float end, float yaw, float y, float h, vec4_t const color)
