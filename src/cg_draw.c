@@ -365,18 +365,16 @@ void CG_DrawLinePitch(float angle, float pitch, float x, float w, float h, vec4_
   CG_FillRect(x, y - h / 2, w, h, color);
 }
 
+// this function probably breaks in some cases, splits aren't handled like in FillAngleYaw
+// Attempts to make it the same way, only for pitch were unsuccessful.
 void CG_FillAnglePitch(float start, float end, float pitch, float x, float w, vec4_t const color)
 {
-  range_t const range = PitchAnglesToRange(start, end, pitch);
-  if (!range.split)
-  {
-    CG_FillRect(x, range.x1, w, range.x2 - range.x1, color);
-  }
-  else
-  {
-    CG_FillRect(x, 0, w, range.x1, color);
-    CG_FillRect(x, range.x2, w, cgs.screenHeight - range.x2, color);
-  }
+  float start_angle = AngleNormalizePI(start - pitch);
+  float start_test  = ProjectionY(start_angle);
+
+  float end_angle = AngleNormalizePI(end - pitch);
+  float end_test  = ProjectionY(end_angle);
+  CG_FillRect(x, start_test, w, end_test - start_test, color);
 }
 
 void CG_FillAngleYaw(float start, float end, float yaw, float y, float h, vec4_t const color)

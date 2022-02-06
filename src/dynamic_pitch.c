@@ -9,27 +9,19 @@
 
 static vmCvar_t dynamic_pitch;
 static vmCvar_t dynamic_pitch_xw;
-static vmCvar_t dynamic_pitch_rgba;
+static vmCvar_t dynamic_pitch_max_rgba;
+static vmCvar_t dynamic_pitch_submax_rgba;
+static vmCvar_t dynamic_pitch_badmax_rgba;
 
 static cvarTable_t dynamic_pitch_cvars[] = {
-  { &dynamic_pitch, "mdd_dynamic_pitch", "0b00", CVAR_ARCHIVE_ND },
+  { &dynamic_pitch, "mdd_dynamic_pitch", "0", CVAR_ARCHIVE_ND },
   { &dynamic_pitch_xw, "mdd_dynamic_pitch_xw", "316 8", CVAR_ARCHIVE_ND },
-  { &dynamic_pitch_rgba, "mdd_dynamic_pitch_rgba", ".4 .4 .8 .6", CVAR_ARCHIVE_ND }
+  { &dynamic_pitch_max_rgba, "mdd_dynamic_pitch_max_rgba", ".2 .8 .2 .9", CVAR_ARCHIVE_ND },
+  { &dynamic_pitch_submax_rgba, "mdd_dynamic_pitch_submax_rgba", ".8 .6 .2 .7", CVAR_ARCHIVE_ND },
+  { &dynamic_pitch_badmax_rgba, "mdd_dynamic_pitch_badmax_rgba", ".9 .2 .2 .6", CVAR_ARCHIVE_ND },
 };
 
 static help_t dynamic_pitch_help[] = {
-  {
-    dynamic_pitch_cvars + 0,
-    BINARY_LITERAL,
-    {
-      "mdd_dynamic_pitch 0bXX",
-      "                    ||",
-      "                    |+-  enable dynamic_pitch",
-      "                    +--- halves alpha when in sub optimal origin/angle",
-    },
-  },
-#define DYNAMIC_PITCH_ENABLED     1
-#define DYNAMIC_PITCH_SCALE_ALPHA 2
   {
     dynamic_pitch_cvars + 1,
     X | W,
@@ -41,7 +33,21 @@ static help_t dynamic_pitch_help[] = {
     dynamic_pitch_cvars + 2,
     RGBA,
     {
-      "mdd_dynamic_pitch_rgba X X X X",
+      "mdd_dynamic_pitch_max_rgba X X X X",
+    },
+  },
+  {
+    dynamic_pitch_cvars + 3,
+    RGBA,
+    {
+      "mdd_dynamic_pitch_submax_rgba X X X X",
+    },
+  },
+  {
+    dynamic_pitch_cvars + 4,
+    RGBA,
+    {
+      "mdd_dynamic_pitch_badmax_rgba X X X X",
     },
   },
 };
@@ -60,7 +66,9 @@ void update_dynamic_pitch(void)
 typedef struct
 {
   vec3_t graph_xw;
-  vec4_t graph_rgba;
+  vec4_t max_graph_rgba;
+  vec4_t submax_graph_rgba;
+  vec4_t badmax_graph_rgba;
 
   playerState_t pm_ps;
 } dynamic_pitch_t;
@@ -72,7 +80,9 @@ void draw_dynamic_pitch(void)
   if (!dynamic_pitch.integer) return;
 
   ParseVec(dynamic_pitch_xw.string, s.graph_xw, 2);
-  ParseVec(dynamic_pitch_rgba.string, s.graph_rgba, 4);
+  ParseVec(dynamic_pitch_max_rgba.string, s.max_graph_rgba, 4);
+  ParseVec(dynamic_pitch_submax_rgba.string, s.submax_graph_rgba, 4);
+  ParseVec(dynamic_pitch_badmax_rgba.string, s.badmax_graph_rgba, 4);
 
   s.pm_ps = *getPs();
 
@@ -82,10 +92,13 @@ void draw_dynamic_pitch(void)
   // 1. the player's origin
   // 2. the player's view direction
   // angle indexes
-  // 1 -> 70.2 - 72.6                  (1476u, 1487u)
-  // 2 -> 71.7 - 72.6                  (1475u, 1487u)
-  // 3 -> 73.4 - 74.0                  (1475u, 1487u)
-  // 4 -> 73.4 - 74.0                  (1112u, this is the bad one)
+  // 1 -> 70.2 - 70.6     (1476u, submax)
+  //      70.7 - 72.6     (1487u, max)
+  // 2 -> 71.7 - 72.1     (1475u, submax)
+  //      72.2 - 72.6     (1487u, max)
+  // 3 -> 73.4 - 73.5     (1475u, submax)
+  //      73.6 - 74.0     (1487u, max)
+  // 4 -> 73.4 - 74.0     (1112u, badmax this is the bad one)
   int optimal_angle;
   if (s.pm_ps.origin[0] >= 0 && s.pm_ps.origin[1] >= 0)
   {
@@ -168,35 +181,77 @@ void draw_dynamic_pitch(void)
     }
   }
 
-  float min_optimal_angle;
-  float max_optimal_angle;
+  float    submax_optimal_angle_min;
+  float    submax_optimal_angle_max;
+  qboolean submax_set = FALSE;
 
-  //  vec4_t graph_rgba = *s.graph_rgba;
+  float    max_optimal_angle_min;
+  float    max_optimal_angle_max;
+  qboolean max_set = FALSE;
+
+  float    badmax_optimal_angle_min;
+  float    badmax_optimal_angle_max;
+  qboolean badmax_set = FALSE;
+
   if (optimal_angle == 1)
   {
-    min_optimal_angle = 70.2f;
-    max_optimal_angle = 72.6f;
+    submax_optimal_angle_min = 70.2f;
+    submax_optimal_angle_max = 70.6f;
+
+    max_optimal_angle_min = 70.7f;
+    max_optimal_angle_max = 72.6f;
+
+    submax_set = TRUE;
+    max_set    = TRUE;
   }
   else if (optimal_angle == 2)
   {
-    min_optimal_angle = 71.7f;
-    max_optimal_angle = 72.6f;
+    submax_optimal_angle_min = 71.7f;
+    submax_optimal_angle_max = 72.1f;
+
+    max_optimal_angle_min = 72.2f;
+    max_optimal_angle_max = 72.6f;
+
+    submax_set = TRUE;
+    max_set    = TRUE;
   }
   else if (optimal_angle == 3)
   {
-    min_optimal_angle = 73.4f;
-    max_optimal_angle = 74.0f;
+    submax_optimal_angle_min = 73.4f;
+    submax_optimal_angle_max = 73.5f;
+
+    max_optimal_angle_min = 73.6f;
+    max_optimal_angle_max = 74.0f;
+
+    submax_set = TRUE;
+    max_set    = TRUE;
   }
   else
   {
-    min_optimal_angle = 73.4f;
-    max_optimal_angle = 74.0f;
-    // graph_rgba        = vec4_t{ s.graph_rgba[0], s.graph_rgba[1], s.graph_rgba[2], s.graph_rgba[3] * 0.5f };
+    badmax_optimal_angle_min = 73.4f;
+    badmax_optimal_angle_max = 74.0f;
+
+    badmax_set = TRUE;
   }
 
   float const x = s.graph_xw[0];
   float const w = s.graph_xw[1];
 
   float const pitch = s.pm_ps.viewangles[PITCH];
-  CG_FillAnglePitch(DEG2RAD(min_optimal_angle), DEG2RAD(max_optimal_angle), DEG2RAD(pitch), x, w, s.graph_rgba);
+
+  if (submax_set)
+  {
+    CG_FillAnglePitch(
+      DEG2RAD(submax_optimal_angle_min), DEG2RAD(submax_optimal_angle_max), DEG2RAD(pitch), x, w, s.submax_graph_rgba);
+  }
+  if (max_set)
+  {
+    CG_FillAnglePitch(
+      DEG2RAD(max_optimal_angle_min), DEG2RAD(max_optimal_angle_max), DEG2RAD(pitch), x, w, s.max_graph_rgba);
+  }
+  if (badmax_set)
+  {
+    CG_FillAnglePitch(
+      DEG2RAD(badmax_optimal_angle_min), DEG2RAD(badmax_optimal_angle_max), DEG2RAD(pitch), x, w, s.badmax_graph_rgba);
+  }
 }
