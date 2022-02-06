@@ -183,15 +183,15 @@ void draw_dynamic_pitch(void)
 
   float    submax_optimal_angle_min;
   float    submax_optimal_angle_max;
-  qboolean submax_set = FALSE;
+  qboolean submax_set = qfalse;
 
   float    max_optimal_angle_min;
   float    max_optimal_angle_max;
-  qboolean max_set = FALSE;
+  qboolean max_set = qfalse;
 
   float    badmax_optimal_angle_min;
   float    badmax_optimal_angle_max;
-  qboolean badmax_set = FALSE;
+  qboolean badmax_set = qfalse;
 
   if (optimal_angle == 1)
   {
@@ -201,8 +201,8 @@ void draw_dynamic_pitch(void)
     max_optimal_angle_min = 70.7f;
     max_optimal_angle_max = 72.6f;
 
-    submax_set = TRUE;
-    max_set    = TRUE;
+    submax_set = qtrue;
+    max_set    = qtrue;
   }
   else if (optimal_angle == 2)
   {
@@ -212,8 +212,8 @@ void draw_dynamic_pitch(void)
     max_optimal_angle_min = 72.2f;
     max_optimal_angle_max = 72.6f;
 
-    submax_set = TRUE;
-    max_set    = TRUE;
+    submax_set = qtrue;
+    max_set    = qtrue;
   }
   else if (optimal_angle == 3)
   {
@@ -223,15 +223,15 @@ void draw_dynamic_pitch(void)
     max_optimal_angle_min = 73.6f;
     max_optimal_angle_max = 74.0f;
 
-    submax_set = TRUE;
-    max_set    = TRUE;
+    submax_set = qtrue;
+    max_set    = qtrue;
   }
   else
   {
     badmax_optimal_angle_min = 73.4f;
     badmax_optimal_angle_max = 74.0f;
 
-    badmax_set = TRUE;
+    badmax_set = qtrue;
   }
 
   float const x = s.graph_xw[0];
