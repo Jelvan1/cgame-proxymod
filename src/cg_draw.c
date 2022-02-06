@@ -346,11 +346,11 @@ void CG_DrawLinePitch(float angle, float pitch, float x, float w, float h, vec4_
 void CG_FillAnglePitch(float start, float end, float pitch, float x, float w, vec4_t const color)
 {
   float start_angle = AngleNormalizePI(start - pitch);
-  float start_test  = ProjectionY(start_angle);
+  float start_y     = ProjectionY(start_angle);
 
   float end_angle = AngleNormalizePI(end - pitch);
-  float end_test  = ProjectionY(end_angle);
-  CG_FillRect(x, start_test, w, end_test - start_test, color);
+  float end_y     = ProjectionY(end_angle);
+  CG_FillRect(x, start_y, w, start_y - end_y, color);
 }
 
 void CG_FillAngleYaw(float start, float end, float yaw, float y, float h, vec4_t const color)
