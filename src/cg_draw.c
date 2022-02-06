@@ -350,7 +350,7 @@ void CG_FillAnglePitch(float start, float end, float pitch, float x, float w, ve
 
   float end_angle = AngleNormalizePI(end - pitch);
   float end_y     = ProjectionY(end_angle);
-  CG_FillRect(x, start_y, w, start_y - end_y, color);
+  CG_FillRect(x, start_y, w, end_y - start_y, color);
 }
 
 void CG_FillAngleYaw(float start, float end, float yaw, float y, float h, vec4_t const color)
