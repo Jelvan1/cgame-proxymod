@@ -32,6 +32,7 @@
 #include "cg_snap.h"
 #include "cg_timer.h"
 #include "compass.h"
+#include "dynamic_pitch.h"
 #include "help.h"
 #include "pitch.h"
 #include "version.h"
@@ -61,6 +62,7 @@ void init_hud(void)
   init_gl();
   init_jump();
   init_pitch();
+  init_dynamic_pitch();
   init_rl();
   init_snap();
   init_timer();
@@ -85,6 +87,7 @@ void update_hud(void)
   update_gl();
   update_jump();
   update_pitch();
+  update_dynamic_pitch();
   update_rl();
   update_snap();
   update_timer();
@@ -101,6 +104,7 @@ void draw_hud(void)
   draw_cgaz();
   draw_snap();
   draw_pitch();
+  draw_dynamic_pitch();
 
   draw_ammo();
   draw_jump();
