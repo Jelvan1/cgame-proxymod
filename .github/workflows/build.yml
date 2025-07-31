@@ -150,21 +150,23 @@ jobs:
         retention-days: 5
 
   macos:
-    name: ${{ matrix.config }} macOS 64-bit (${{ matrix.c }})
-    runs-on: macos-latest
+    name: ${{ matrix.config }} macOS ${{ matrix.arch }} (${{ matrix.c }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        arch: [aarch64, x86_64]
         c: [clang]
         config: [Release]
         include:
+          - arch: aarch64
+            os: macos-latest
+          - arch: x86_64
+            os: macos-13
           - c: clang
             cxx: clang++
 
     steps:
-    - name: Install tools
-      run: brew install ninja
-
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 # fetch annotated tags for proper versioning
@@ -175,7 +177,7 @@ jobs:
         -S .
         -B build
         -G Ninja
-        -DBINARY_NAME=cgamex86_64
+        -DBINARY_NAME=cgame${{ matrix.arch }}
         -DCMAKE_BUILD_TYPE=${{ matrix.config }}
         -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -m64"
         -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -m64"

@@ -10,8 +10,8 @@ Quick and easy:
 
 |            | **Windows** | **Linux** | **macOS** |
 | :--------: | :---------: | :-------: | :-------: |
-| **32-bit** | [cgamex86.dll](../../releases/download/latest/cgamex86.dll) | [cgamei386.so](../../releases/download/latest/cgamei386.so) |
-| **64-bit** | [cgamex86_64.dll](../../releases/download/latest/cgamex86_64.dll) | [cgamex86_64.so](../../releases/download/latest/cgamex86_64.so) | [cgamex86_64.dylib](../../releases/download/latest/cgamex86_64.dylib) |
+| **32-bit** | [cgamex86.dll](../../releases/download/latest/cgamex86.dll) | [cgamei386.so](../../releases/download/latest/cgamei386.so) | |
+| **64-bit** | [cgamex86_64.dll](../../releases/download/latest/cgamex86_64.dll) | [cgamex86_64.so](../../releases/download/latest/cgamex86_64.so) | [cgameaarch64.dylib](../../releases/download/latest/cgameaarch64.dylib) (Apple Silicon), [cgamex86_64.dylib](../../releases/download/latest/cgamex86_64.dylib) (Intel) |
 
   2. Download and copy this binary into the *defrag* folder of your Quake III Arena directory.
   3. Put `seta vm_cgame 0` in your config file (e.g. *defrag/autoexec.cfg*).

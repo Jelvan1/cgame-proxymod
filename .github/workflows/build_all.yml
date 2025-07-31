@@ -180,25 +180,27 @@ jobs:
         retention-days: 5
 
   macos:
-    name: ${{ matrix.config }} macOS 64-bit (${{ matrix.c }})
-    runs-on: macos-latest
+    name: ${{ matrix.config }} macOS ${{ matrix.arch }} (${{ matrix.c }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # Apple redirects gcc to clang => explicitly use gcc-12
-        # see https://github.com/actions/virtual-environments/blob/main/images/macos/macos-12-Readme.md#language-and-runtime
-        c: [gcc-12, clang]
+        arch: [aarch64, x86_64]
+        # Apple redirects gcc to clang => explicitly use gcc-14
+        # see https://github.com/actions/virtual-environments/blob/main/images/macos/macos-13-Readme.md#language-and-runtime
+        c: [gcc-14, clang]
         config: [Debug, Release]
         include:
-          - c: gcc-12
-            cxx: g++-12
+          - arch: aarch64
+            os: macos-latest
+          - arch: x86_64
+            os: macos-13
+          - c: gcc-14
+            cxx: g++-14
           - c: clang
             cxx: clang++
 
     steps:
-    - name: Install tools
-      run: brew install ninja
-
     - uses: actions/checkout@v3
       with:
         submodules: recursive
@@ -208,7 +210,7 @@ jobs:
         -S .
         -B build
         -G Ninja
-        -DBINARY_NAME=cgamex86_64
+        -DBINARY_NAME=cgame${{ matrix.arch }}
         -DCMAKE_BUILD_TYPE=${{ matrix.config }}
         -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -m64"
         -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -m64"
