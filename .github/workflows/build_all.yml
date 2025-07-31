@@ -39,7 +39,7 @@ jobs:
         release: false
         update: false
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -66,11 +66,11 @@ jobs:
       if: matrix.c == 'gcc' && matrix.config == 'Release'
       run: cmake --install build --prefix bin --strip
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: matrix.c == 'gcc' && matrix.config == 'Release'
       with:
-        name: artifact
-        path: bin/*.dll
+        name: windows-${{ matrix.arch }}
+        path: bin
         if-no-files-found: error
         retention-days: 5
 
@@ -91,7 +91,7 @@ jobs:
             A: x64
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -144,7 +144,7 @@ jobs:
         fi
         sudo apt-get -y install ninja-build
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -171,11 +171,11 @@ jobs:
       if: matrix.c == 'gcc' && matrix.config == 'Release'
       run: cmake --install build --prefix bin --strip
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: matrix.c == 'gcc' && matrix.config == 'Release'
       with:
-        name: artifact
-        path: bin/*.so
+        name: linux-${{ matrix.arch }}
+        path: bin
         if-no-files-found: error
         retention-days: 5
 
@@ -201,7 +201,7 @@ jobs:
             cxx: clang++
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -228,10 +228,10 @@ jobs:
       if: matrix.c == 'clang' && matrix.config == 'Release'
       run: cmake --install build --prefix bin --strip
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: matrix.c == 'clang' && matrix.config == 'Release'
       with:
-        name: artifact
-        path: bin/*.dylib
+        name: macos-${{ matrix.arch }}
+        path: bin
         if-no-files-found: error
         retention-days: 5
